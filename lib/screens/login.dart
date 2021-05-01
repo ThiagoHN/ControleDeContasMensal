@@ -12,6 +12,8 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final GlobalKey<FormState> globalKey = GlobalKey();
+  final TextEditingController controleSenha = TextEditingController();
+  final TextEditingController controleConfirmaSenha = TextEditingController(); 
   var formmap = {'nome':'','email':'','senha':'','confirmarsenha':''};
 
   bool esta_logando = false;
@@ -25,8 +27,25 @@ class _LoginState extends State<Login> {
         carregando = true;
       });
 
-      if(esta_logando)
-        resultado = await Provider.of<UsuarioProvider>(context, listen: false).logar();
+      if(esta_logando) {
+        resultado = await Provider.of<UsuarioProvider>(context, listen: false).logar(formmap['email'],formmap['senha']);
+    
+          if(!resultado) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Deu ruim menor')));
+          } 
+      }
+      
+      else {
+        resultado = await Provider.of<UsuarioProvider>(context, listen: false).registrar(formmap['nome'],formmap['email'],formmap['senha']);
+    
+          if(!resultado) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Deu ruim menor')));
+          } 
+      }
+
+      setState(() {
+        carregando = false;
+      });
     }
   }
 
@@ -66,7 +85,7 @@ class _LoginState extends State<Login> {
                           decoration: InputDecoration(
                               border: OutlineInputBorder(), labelText: 'Nome'),
                           onSaved: (value) {
-                            // preco_total = double.parse(value);
+                            formmap['nome'] = value.trim();
                           },
                         ),
                       const SizedBox(height: 20),
@@ -74,7 +93,7 @@ class _LoginState extends State<Login> {
                         decoration: InputDecoration(
                             border: OutlineInputBorder(), labelText: 'Email'),
                         onSaved: (value) {
-                          // email = double.parse(value);
+                          formmap['email'] = value.trim();
                         },
                         validator: (value) {
                           if (value.isEmpty) {
@@ -85,10 +104,11 @@ class _LoginState extends State<Login> {
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
+                        controller: controleSenha,
                         decoration: InputDecoration(
                             border: OutlineInputBorder(), labelText: 'Senha'),
                         onSaved: (value) {
-                          // senha = double.parse(value);
+                          formmap['senha'] = value.trim();
                         },
                         validator: (value) {
                           if (value.isEmpty)
@@ -99,12 +119,21 @@ class _LoginState extends State<Login> {
                       const SizedBox(height: 20),
                       if (esta_logando)
                         TextFormField(
+                          controller: controleConfirmaSenha,
                           decoration: InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Confirmar senha'),
                           onSaved: (value) {
-                            // preco_total = double.parse(value);
+                          formmap['confirmarsenha'] = value.trim();
                           },
+                          validator: (value) {
+                            if (value.isEmpty)
+                              return 'Campo obrigatório, por favor insira sua senha!';
+                            if (value != controleSenha.text)
+                              return 'As duas senhas não são iguais, por favor insira sua senha!';
+                            return null;
+                          },
+
                         ),
                       const SizedBox(height: 20),
                       Container(
@@ -112,7 +141,7 @@ class _LoginState extends State<Login> {
                         height: 50,
                         child: ElevatedButton(
                             onPressed: _logar,
-                            child: Text('Acessar')),
+                            child: carregando ? CircularProgressIndicator() : Text(esta_logando ? 'Acessar' : 'Cadastrar')),
                       ),
                       const SizedBox(height: 10),
                       Container(
@@ -122,7 +151,7 @@ class _LoginState extends State<Login> {
                             onPressed: () => setState(() {
                                   esta_logando = !esta_logando;
                                 }),
-                            child: Text('Registrar')),
+                            child: Text(esta_logando ? 'Registrar' : 'Voltar')),
                       ),
                     ],
                   ),
