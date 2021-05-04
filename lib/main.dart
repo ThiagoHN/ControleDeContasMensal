@@ -16,11 +16,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: UsuarioProvider()),
         ChangeNotifierProxyProvider<UsuarioProvider, ContasProvider>(
             create: (ctx) => ContasProvider(),
             update: (ctx, usuarios, contas) =>
                 ContasProvider.logado(usuarios.id)),
-        ChangeNotifierProvider.value(value: UsuarioProvider())
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

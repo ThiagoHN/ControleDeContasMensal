@@ -33,6 +33,7 @@ class ContasProvider with ChangeNotifier {
       double valor, String vencimento, String titulo, String descricao) async {
     int id = await BancoDados.inserir(nomeTabela, {
       'valor': valor,
+      'idUsuario': idUsuario,
       'vencimento': vencimento,
       'titulo': titulo,
       'descricao': descricao

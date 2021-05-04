@@ -20,7 +20,7 @@ class _CriadorConta extends State<CriadorConta> {
   String titulo = '';
   String descricao = '';
   DateTime vencimento;
-  bool atualizar;
+  bool atualizar = false;
 
   void initState() {
     super.initState();
@@ -34,27 +34,32 @@ class _CriadorConta extends State<CriadorConta> {
   }
 
   selecionaData() {
-    DateTime hoje = DateTime.now().add(Duration (days: 1));
-    showDatePicker(context: context, initialDate: hoje, firstDate: hoje, lastDate: DateTime (hoje.year + 1)).then((value) => setState((){
-      vencimento = value;
-    }));
+    DateTime hoje = DateTime.now().add(Duration(days: 1));
+    showDatePicker(
+            context: context,
+            initialDate: hoje,
+            firstDate: hoje,
+            lastDate: DateTime(hoje.year + 1))
+        .then((value) => setState(() {
+              vencimento = value;
+            }));
   }
 
   criarConta() async {
-    if (!globalKey.currentState.validate())
-      return false;
+    if (!globalKey.currentState.validate()) return false;
     globalKey.currentState.save();
 
-    if (atualizar)
-      await Provider.of<ContasProvider>(context,listen: false).add(valor, vencimento.toIso8601String(), titulo, descricao);
+    if (!atualizar)
+      await Provider.of<ContasProvider>(context, listen: false)
+          .add(valor, vencimento.toIso8601String(), titulo, descricao);
     else {
       widget.c.valor = valor;
       widget.c.titulo = titulo;
       widget.c.descricao = descricao;
       widget.c.vencimento = vencimento.toIso8601String();
 
-      await Provider.of<ContasProvider>(context,listen: false).update(widget.c);
-
+      await Provider.of<ContasProvider>(context, listen: false)
+          .update(widget.c);
     }
     Navigator.of(context).pop();
   }
@@ -63,7 +68,7 @@ class _CriadorConta extends State<CriadorConta> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Racha Conta Menu'),
+        title: Text('Controle de Contas Mensal'),
       ),
       body: Form(
           key: globalKey,
@@ -74,15 +79,14 @@ class _CriadorConta extends State<CriadorConta> {
                 children: [
                   TextFormField(
                     initialValue: titulo,
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder()),
+                    decoration: InputDecoration(border: OutlineInputBorder()),
                     keyboardType: TextInputType.name,
                     maxLength: 20,
                     onSaved: (value) {
                       titulo = value;
                     },
                     validator: (value) {
-                      if (value.isEmpty) 
+                      if (value.isEmpty)
                         return 'O campo está vazio! Favor escrever algo!';
                       return null;
                     },
@@ -90,15 +94,14 @@ class _CriadorConta extends State<CriadorConta> {
                   const SizedBox(height: 25),
                   TextFormField(
                     initialValue: descricao,
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder()),
+                    decoration: InputDecoration(border: OutlineInputBorder()),
                     keyboardType: TextInputType.name,
                     maxLines: 2,
                     onSaved: (value) {
                       descricao = value;
                     },
                     validator: (value) {
-                      if (value.isEmpty) 
+                      if (value.isEmpty)
                         return 'O campo está vazio! Favor escrever algo!';
                       return null;
                     },
@@ -121,22 +124,20 @@ class _CriadorConta extends State<CriadorConta> {
                     },
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      vencimento == null ? Text('Nenhuma data foi selecionada') : Text(DateFormat('dd/MM/yyyy').format(vencimento)),
-                      ElevatedButton(onPressed: selecionaData, child: Text('Escolha uma data')),                  
-                    ]
-                  ),
-
-
-
-                  ElevatedButton(
-                      onPressed: criarConta,
-                      child: Text('Calcular'))
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        vencimento == null
+                            ? Text('Nenhuma data \n foi selecionada')
+                            : Text(DateFormat('dd/MM/yyyy').format(vencimento)),
+                        ElevatedButton(
+                            onPressed: selecionaData,
+                            child: Text('Escolha uma data')),
+                      ]),
+                  ElevatedButton(onPressed: criarConta, child: Text('Calcular'))
                 ],
               ),
             ),
           )),
     );
   }
-  }
+}

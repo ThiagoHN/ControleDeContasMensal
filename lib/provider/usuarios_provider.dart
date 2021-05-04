@@ -16,6 +16,7 @@ class UsuarioProvider with ChangeNotifier {
   }
 
   int get id {
+    if (usuarioLogado == null) return -1;
     return usuarioLogado.id;
   }
 
