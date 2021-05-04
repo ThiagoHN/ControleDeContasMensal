@@ -9,7 +9,7 @@ class UsuarioProvider with ChangeNotifier {
   Usuario usuarioLogado;
   Timer timerAutenticacao;
   DateTime expirationToken;
-  final nomeTabela = 'contas';
+  final nomeTabela = 'usuarios';
 
   bool get estaLogado {
     return usuarioLogado != null;
@@ -26,7 +26,7 @@ class UsuarioProvider with ChangeNotifier {
   Future<bool> logar(String email, String senha) async {
     final leitura =
         await BancoDados.leituraPorChave(nomeTabela, 'email', email);
-    if (leitura == null) return false;
+    if (leitura.isEmpty) return false;
     if (leitura[0]['senha'].toString().compareTo(senha) != 0) return false;
 
     usuarioLogado = Usuario(
@@ -51,7 +51,7 @@ class UsuarioProvider with ChangeNotifier {
   Future<bool> registrar(String nome, String email, String senha) async {
     final leitura =
         await BancoDados.leituraPorChave(nomeTabela, 'email', email);
-    if (leitura != null) return false;
+    if (leitura.isNotEmpty) return false;
 
     int id = await BancoDados.inserir(
         nomeTabela, {'nome': nome, 'email': email, 'senha': senha});
@@ -83,8 +83,8 @@ class UsuarioProvider with ChangeNotifier {
         json.decode(pref.getString('userData')) as Map<String, Object>;
     final expiredDate = DateTime.parse(userData['expiredToken']);
     if (expiredDate.isBefore(DateTime.now())) return false;
-    final leitura =
-        await BancoDados.leituraPorChave(nomeTabela, 'id', userData['id']);
+    final leitura = await BancoDados.leituraPorChave(
+        nomeTabela, 'id', userData['userid'].toString());
 
     usuarioLogado = Usuario(
         leitura[0]['nome'].toString(),

@@ -2,26 +2,21 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 class Conta with ChangeNotifier {
+  int _idconta;
   double _valor;
-  String _idconta;
   String _vencimento;
   String _titulo;
   String _descricao;
 
-  Conta(this._valor, this._idconta, this._vencimento, this._titulo,
+  Conta(this._idconta, this._valor, this._vencimento, this._titulo,
       this._descricao);
 
   double get valor {
     return this._valor;
   }
 
-  String get idconta {
+  int get idconta {
     return this._idconta;
-  }
-
-  String get creationDate {
-    DateTime _creationDate = DateTime.parse(_idconta);
-    return DateFormat("dd/MM/yyyy - HH:mm").format(_creationDate);
   }
 
   String get vencimento {
@@ -40,7 +35,7 @@ class Conta with ChangeNotifier {
     this._valor = valor;
   }
 
-  set id(String idconta) {
+  set id(int idconta) {
     this._idconta = idconta;
   }
 

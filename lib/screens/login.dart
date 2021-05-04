@@ -1,7 +1,6 @@
 import 'package:controle_de_contas_mensal/provider/usuarios_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'menu.dart';
 
 class Login extends StatefulWidget {
   static const routeName = 'Tela_principal';
@@ -13,34 +12,36 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final GlobalKey<FormState> globalKey = GlobalKey();
   final TextEditingController controleSenha = TextEditingController();
-  final TextEditingController controleConfirmaSenha = TextEditingController(); 
-  var formmap = {'nome':'','email':'','senha':'','confirmarsenha':''};
+  final TextEditingController controleConfirmaSenha = TextEditingController();
+  var formmap = {'nome': '', 'email': '', 'senha': '', 'confirmarsenha': ''};
 
-  bool esta_logando = false;
+  bool esta_logando = true;
   bool carregando = false;
 
   _logar() async {
-    if (globalKey.currentState.validate()){
+    if (globalKey.currentState.validate()) {
       globalKey.currentState.save();
       bool resultado = false;
       setState(() {
         carregando = true;
       });
 
-      if(esta_logando) {
-        resultado = await Provider.of<UsuarioProvider>(context, listen: false).logar(formmap['email'],formmap['senha']);
-    
-          if(!resultado) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Deu ruim menor')));
-          } 
-      }
-      
-      else {
-        resultado = await Provider.of<UsuarioProvider>(context, listen: false).registrar(formmap['nome'],formmap['email'],formmap['senha']);
-    
-          if(!resultado) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Deu ruim menor')));
-          } 
+      if (esta_logando) {
+        resultado = await Provider.of<UsuarioProvider>(context, listen: false)
+            .logar(formmap['email'], formmap['senha']);
+
+        if (!resultado) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Deu ruim menor')));
+        }
+      } else {
+        resultado = await Provider.of<UsuarioProvider>(context, listen: false)
+            .registrar(formmap['nome'], formmap['email'], formmap['senha']);
+
+        if (!resultado) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Deu ruim menor')));
+        }
       }
 
       setState(() {
@@ -71,89 +72,98 @@ class _LoginState extends State<Login> {
               child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(25),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Edu Duca',
-                        style: TextStyle(
-                          fontSize: 40,
+                  child: Form(
+                    key: globalKey,
+                    child: Column(
+                      children: [
+                        Text(
+                          'Edu Duca',
+                          style: TextStyle(
+                            fontSize: 40,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      if (esta_logando)
+                        const SizedBox(height: 20),
+                        if (!esta_logando)
+                          TextFormField(
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Nome'),
+                            onSaved: (value) {
+                              formmap['nome'] = value.trim();
+                            },
+                          ),
+                        const SizedBox(height: 20),
                         TextFormField(
                           decoration: InputDecoration(
-                              border: OutlineInputBorder(), labelText: 'Nome'),
+                              border: OutlineInputBorder(), labelText: 'Email'),
                           onSaved: (value) {
-                            formmap['nome'] = value.trim();
+                            formmap['email'] = value.trim();
+                          },
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Campo obrigatório, por favor insira seu email!';
+                            }
+                            return null;
                           },
                         ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        decoration: InputDecoration(
-                            border: OutlineInputBorder(), labelText: 'Email'),
-                        onSaved: (value) {
-                          formmap['email'] = value.trim();
-                        },
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Campo obrigatório, por favor insira seu email!';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        controller: controleSenha,
-                        decoration: InputDecoration(
-                            border: OutlineInputBorder(), labelText: 'Senha'),
-                        onSaved: (value) {
-                          formmap['senha'] = value.trim();
-                        },
-                        validator: (value) {
-                          if (value.isEmpty)
-                            return 'Campo obrigatório, por favor insira sua senha!';
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      if (esta_logando)
+                        const SizedBox(height: 20),
                         TextFormField(
-                          controller: controleConfirmaSenha,
+                          obscureText: true,
+                          controller: controleSenha,
                           decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Confirmar senha'),
+                              border: OutlineInputBorder(), labelText: 'Senha'),
                           onSaved: (value) {
-                          formmap['confirmarsenha'] = value.trim();
+                            formmap['senha'] = value.trim();
                           },
                           validator: (value) {
                             if (value.isEmpty)
                               return 'Campo obrigatório, por favor insira sua senha!';
-                            if (value != controleSenha.text)
-                              return 'As duas senhas não são iguais, por favor insira sua senha!';
                             return null;
                           },
-
                         ),
-                      const SizedBox(height: 20),
-                      Container(
-                        width: 200,
-                        height: 50,
-                        child: ElevatedButton(
-                            onPressed: _logar,
-                            child: carregando ? CircularProgressIndicator() : Text(esta_logando ? 'Acessar' : 'Cadastrar')),
-                      ),
-                      const SizedBox(height: 10),
-                      Container(
-                        width: 200,
-                        height: 50,
-                        child: ElevatedButton(
-                            onPressed: () => setState(() {
-                                  esta_logando = !esta_logando;
-                                }),
-                            child: Text(esta_logando ? 'Registrar' : 'Voltar')),
-                      ),
-                    ],
+                        const SizedBox(height: 20),
+                        if (!esta_logando)
+                          TextFormField(
+                            obscureText: true,
+                            controller: controleConfirmaSenha,
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Confirmar senha'),
+                            onSaved: (value) {
+                              formmap['confirmarsenha'] = value.trim();
+                            },
+                            validator: (value) {
+                              if (value.isEmpty)
+                                return 'Campo obrigatório, por favor insira sua senha!';
+                              if (value != controleSenha.text)
+                                return 'As duas senhas não são iguais, por favor insira sua senha!';
+                              return null;
+                            },
+                          ),
+                        const SizedBox(height: 20),
+                        Container(
+                          width: 200,
+                          height: 50,
+                          child: ElevatedButton(
+                              onPressed: _logar,
+                              child: carregando
+                                  ? CircularProgressIndicator()
+                                  : Text(
+                                      esta_logando ? 'Acessar' : 'Cadastrar')),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          width: 200,
+                          height: 50,
+                          child: ElevatedButton(
+                              onPressed: () => setState(() {
+                                    esta_logando = !esta_logando;
+                                  }),
+                              child:
+                                  Text(esta_logando ? 'Registrar' : 'Voltar')),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

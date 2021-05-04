@@ -1,69 +1,31 @@
+import 'package:controle_de_contas_mensal/provider/contas_provider.dart';
+import 'package:controle_de_contas_mensal/screens/criadorconta.dart';
 import 'package:flutter/material.dart';
-import 'login.dart';
+import 'package:provider/provider.dart';
 
-class Menu extends StatefulWidget {
-  static const routeName = 'Menu';
-
-  @override
-  _MenuState createState() => _MenuState();
-}
-
-class _MenuState extends State<Menu> {
-  final GlobalKey<FormState> globalKey = GlobalKey();
+class Menu extends StatelessWidget {
+  static const routeName = 'menu';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
-              colors: [
-                Colors.purple[700],
-                Colors.indigo[500],
-              ],
-            )),
-          ),
-          Center(
-            child: Card(
-              elevation: 4,
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(40),
-                  child: Column(
-                    children: [
-                      Text(
-                        'O que vamos',
-                        style: TextStyle(
-                          fontSize: 40,
-                        ),
+        appBar: AppBar(),
+        floatingActionButton: FloatingActionButton(onPressed: () => Navigator.of(context)
+              .push(MaterialPageRoute<void>(builder: (context) => CriadorConta()))),
+        body: FutureBuilder(
+          future:
+              Provider.of<ContasProvider>(context, listen: false).getDados(),
+          builder: (ctx, result) =>
+              result.connectionState == ConnectionState.waiting
+                  ? Center(child: CircularProgressIndicator())
+                  : Consumer<ContasProvider>(
+                      builder: (ctx, contas, _) => ListView.builder(
+                        itemCount: contas.items.length,
+                        itemBuilder: (ctx, index) =>
+                          ListTile(leading: CircleAvatar(), title: Text(contas.items[index].titulo), subtitle: Text(contas.items[index].descricao), trailing: GestureDetector(onTap: () async { await Provider.of<ContasProvider>(context,listen: false).remove(contas.items[index]);} , child: Icon(Icons.delete)), onTap: () => Navigator.of(context)
+              .push(MaterialPageRoute<void>(builder: (context) => CriadorConta(c: contas.items[index],))),),
                       ),
-                      Text(
-                        'aprender?',
-                        style: TextStyle(
-                          fontSize: 40,
-                        ),
-                      ),
-                      const SizedBox(height: 50),
-                      Container(
-                        width: 100,
-                        height: 50,
-                        child: ElevatedButton(
-                            onPressed: () => Navigator.of(context)
-                                .pushNamed(Login.routeName),
-                            child: Text('Sair')),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+                    ),
+        ));
   }
 }

@@ -44,24 +44,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(),
-        floatingActionButton: FloatingActionButton(
-            onPressed: () => Provider.of<ContasProvider>(context, listen: false)
-                .add(22, '2212', 'Teste', 'Deu ruim')),
-        body: Consumer<ContasProvider>(
-          builder: (ctx, contas, _) => ListView.builder(
-            itemCount: contas.items.length,
-            itemBuilder: (ctx, index) => Text(contas.items[index].titulo),
-          ),
-        ));
-  }
-}

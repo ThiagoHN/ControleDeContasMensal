@@ -7,8 +7,8 @@ class BancoDados {
     final dbpath = await sql.getDatabasesPath();
     return sql.openDatabase(path.join(dbpath, 'BancoDados.db'),
         onCreate: (db, version) async {
-      await db.execute('CREATE TABLE usuarios (' +
-          'id INTEGER PRIMARY KEY' +
+      await db.execute('CREATE TABLE usuarios(' +
+          'id INTEGER PRIMARY KEY,' +
           'nome TEXT,' +
           'email TEXT,' +
           'senha TEXT)');
