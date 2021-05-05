@@ -32,7 +32,7 @@ class _LoginState extends State<Login> {
 
         if (!resultado) {
           ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Deu ruim menor')));
+              .showSnackBar(SnackBar(content: Text('Os dados estão inválidos')));
         }
       } else {
         resultado = await Provider.of<UsuarioProvider>(context, listen: false)
@@ -61,8 +61,8 @@ class _LoginState extends State<Login> {
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,
               colors: [
-                Colors.purple[700],
-                Colors.indigo[500],
+                Colors.red[700],
+                Colors.yellow[500],
               ],
             )),
           ),
@@ -77,7 +77,7 @@ class _LoginState extends State<Login> {
                     child: Column(
                       children: [
                         Text(
-                          'Edu Duca',
+                          'Controle de Contas',
                           style: TextStyle(
                             fontSize: 40,
                           ),
